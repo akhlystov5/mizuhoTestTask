@@ -1,6 +1,9 @@
 package com.mizuho;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -12,9 +15,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
-import org.springframework.jms.support.converter.MessageConverter;
-import org.springframework.jms.support.converter.MessageType;
+import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 @SpringBootApplication
 @EnableJms
@@ -31,12 +32,28 @@ public class PricesApp {
         return factory;
     }
 
-    @Bean // Serialize message content to json using TextMessage
-    public MessageConverter jacksonJmsMessageConverter() {
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setTargetType(MessageType.TEXT);
-        converter.setTypeIdPropertyName("_type");
-        return converter;
+    @Bean
+    public DefaultJmsListenerContainerFactory jmsTopicListenerContainerFactory(
+            DefaultJmsListenerContainerFactoryConfigurer configurer,
+            ConnectionFactory connectionFactory) {
+
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        configurer.configure(factory, connectionFactory);
+        factory.setPubSubDomain(true);
+        return factory;
+    }
+
+    @Bean
+    public DynamicDestinationResolver destinationResolver() {
+        return new DynamicDestinationResolver() {
+            @Override
+            public Destination resolveDestinationName(Session session, String destinationName, boolean pubSubDomain) throws JMSException {
+                if (destinationName.endsWith("topic")) {
+                    pubSubDomain = true;
+                }
+                return super.resolveDestinationName(session, destinationName, pubSubDomain);
+            }
+        };
     }
 
     public static void main(String[] args) {
@@ -44,9 +61,10 @@ public class PricesApp {
         ConfigurableApplicationContext context = SpringApplication.run(PricesApp.class, args);
 
         JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+//        jmsTemplate.setPubSubDomain(true);
 
         // Send a message with a POJO - the template reuse the message converter
-        log.info("Sending an email message.");
+        log.info("Sending a test message.");
         jmsTemplate.convertAndSend("mailbox", "info@example.com Hello");
     }
 
