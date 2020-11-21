@@ -35,26 +35,26 @@ public class MyFileChangeListener implements FileChangeListener {
                      || cfile.getType().equals(Type.DELETE) ) && */ !isLocked(cfile.getFile().toPath())) {
                     log.info("Operation: " + cfile.getType()
                             + " On file: "+ cfile.getFile().getName() + " is done");
-                    try {
                         String newFilePath = cfile.getFile().getAbsolutePath().replace("input", "processed");
 
-                        // Send a message with a POJO - the template reuse the message converter
+                    try {
+                        FileUtils.copyFile(cfile.getFile(), new File(newFilePath));
+                    } catch (Exception e) {
                         log.info("Sending a JMS message. newFilePath=" + newFilePath);
 
-                        log.info("jmsTemplate" + jmsTemplate);
-                        jmsTemplate.convertAndSend("vendor-file-published-queue", newFilePath);
-                        FileUtils.copyFile(cfile.getFile(), new File(newFilePath));
-                        cfile.getFile().delete();
-                    } catch (Exception e) {
-                        String newFilePath = cfile.getFile().getAbsolutePath().replace("input", "error");
+                        newFilePath = cfile.getFile().getAbsolutePath().replace("input", "error");
                         try {
                             FileUtils.copyFile(cfile.getFile(), new File(newFilePath));
                         } catch (IOException ex) {
                             log.error("failed to copy file to the error folder", ex);
                         }
                         cfile.getFile().delete();
-                        log.error("failed processing file " + cfile.getRelativeName(), e);
+                        log.error("failed processing file " + cfile.getFile().getAbsolutePath(), e);
+                        return;
                     }
+                    cfile.getFile().delete();
+                    jmsTemplate.convertAndSend("vendor-file-published-queue", newFilePath);
+
                 }
             }
         }
