@@ -25,6 +25,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Prices Application. document should be sent together with code
+ *
+ * @author Alexander Khlystov
+ * @since November 2020
+ */
 @SpringBootApplication
 @EnableJms
 @Slf4j

@@ -30,7 +30,7 @@ public class PriceService {
         priceRepository.saveAll(vendorPrices);
     }
 
-    public List<Price> getPrices(String vendor) {
+    public List<Price> getPricesByVendor(String vendor) {
         return priceRepository.findByVendor(vendor);
     }
 

@@ -31,7 +31,7 @@ public class PriceRestControllerTest {
         List<Price> prices = new ArrayList<>();
         Price price = Price.builder().vendor("vendor").isin("isin").price(BigDecimal.valueOf(100.00D)).build();
         prices.add(price);
-        Mockito.when(priceService.getPrices("vendor")).thenReturn(prices);
+        Mockito.when(priceService.getPricesByVendor("vendor")).thenReturn(prices);
         ResponseEntity<List<Price>> response = priceRestController.pricesByVendor("vendor");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(prices.size(), response.getBody().size());
