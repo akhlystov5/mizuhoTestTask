@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.core.JmsTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,7 +17,7 @@ import java.time.Duration;
 public class FileWatcherConfig {
 
     @Autowired
-    MyFileChangeListener myFileChangeListener;
+    VendorFileChangeListener vendorFileChangeListener;
 
     @Value("${vendor.publish.directory}")
     private String vendorPublishDirectory;
@@ -38,7 +37,7 @@ public class FileWatcherConfig {
         File directory = new File(vendorPublishDirectory + "/input");
         log.info("directory.getAbsolutePath()="+directory.getAbsolutePath());
         fileSystemWatcher.addSourceDirectory(directory);
-        fileSystemWatcher.addListener(myFileChangeListener);
+        fileSystemWatcher.addListener(vendorFileChangeListener);
         fileSystemWatcher.start();
         log.info("started fileSystemWatcher");
         return fileSystemWatcher;

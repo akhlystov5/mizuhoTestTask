@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class FileReader {
 
-    public List<String> readFileContent(String message) throws IOException {
-        return FileUtils.readLines(new File(message), "UTF-8");
+    public List<String> readFileContent(String fileName) throws IOException {
+        return FileUtils.readLines(new File(fileName), "UTF-8");
     }
 }

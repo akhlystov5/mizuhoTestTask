@@ -22,13 +22,10 @@ import java.util.Set;
 
 @Slf4j
 @Component
-public class MyFileChangeListener implements FileChangeListener {
+public class VendorFileChangeListener implements FileChangeListener {
 
     @Autowired
     private JmsTemplate jmsTemplate;
-
-    @Value("${vendor.publish.directory}")
-    private String vendorPublishDirectory;
 
     @Override
     public void onChange(Set<ChangedFiles> changeSet) {
@@ -42,7 +39,7 @@ public class MyFileChangeListener implements FileChangeListener {
                     try {
                         FileUtils.copyFile(cfile.getFile(), new File(newFilePath));
                     } catch (Exception e) {
-                        log.info("Sending a JMS message. newFilePath=" + newFilePath);
+                        log.error("failed copying file " + cfile.getFile().getAbsolutePath(), e);
 
                         newFilePath = cfile.getFile().getAbsolutePath().replace("input", "error");
                         try {
@@ -50,19 +47,16 @@ public class MyFileChangeListener implements FileChangeListener {
                         } catch (IOException ex) {
                             log.error("failed to copy file to the error folder", ex);
                         }
-                        cfile.getFile().delete();
-                        log.error("failed processing file " + cfile.getFile().getAbsolutePath(), e);
-                        return;
+                        continue;
                     }
                     cfile.getFile().delete();
                     jmsTemplate.convertAndSend("vendor-file-published-queue", newFilePath);
-
                 }
             }
         }
     }
 
-    private boolean isLocked(Path path) {
+    boolean isLocked(Path path) {
         try (FileChannel ch = FileChannel.open(path, StandardOpenOption.WRITE); FileLock lock = ch.tryLock()) {
             return lock == null;
         } catch (IOException e) {

@@ -42,7 +42,7 @@ public class PricesApp {
                                                     DefaultJmsListenerContainerFactoryConfigurer configurer) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 
-        factory.setErrorHandler(t -> log.error("error occurred during processing q", t));
+        factory.setErrorHandler(t -> log.error("error occurred during processing queue", t));
         // This provides all boot's default to this factory, including the message converter
         configurer.configure(factory, connectionFactory);
 
@@ -56,7 +56,7 @@ public class PricesApp {
             ConnectionFactory connectionFactory) {
 
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setErrorHandler(t -> log.error("error occurred during processing t", t));
+        factory.setErrorHandler(t -> log.error("error occurred during processing topic", t));
 
         configurer.configure(factory, connectionFactory);
         factory.setPubSubDomain(true);
@@ -79,7 +79,7 @@ public class PricesApp {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(PricesApp.class, args);
 
-        //TODO remove it?
+        //test data. TODO remove it?
         PriceService priceService = context.getBean(PriceService.class);
         priceService.savePrices(
                 new ArrayList<>(Arrays.asList(
