@@ -2,11 +2,13 @@ package com.mizuho;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.time.Duration;
@@ -18,11 +20,22 @@ public class FileWatcherConfig {
     @Autowired
     MyFileChangeListener myFileChangeListener;
 
+    @Value("${vendor.publish.directory}")
+    private String vendorPublishDirectory;
+
+    @PostConstruct
+    public void createFolders() {
+        log.info("vendorPublishDirectory="+vendorPublishDirectory);
+        //TODO create 3 folders if don't exist
+    }
+
     @Bean
     public FileSystemWatcher fileSystemWatcher() {
+        log.info("vendorPublishDirectory="+vendorPublishDirectory);
+
         FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(true,
                 Duration.ofMillis(1500L), Duration.ofMillis(500L));
-        File directory = new File("./src/test/app/input");
+        File directory = new File(vendorPublishDirectory + "/input");
         log.info("directory.getAbsolutePath()="+directory.getAbsolutePath());
         fileSystemWatcher.addSourceDirectory(directory);
         fileSystemWatcher.addListener(myFileChangeListener);

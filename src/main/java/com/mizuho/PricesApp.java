@@ -70,20 +70,10 @@ public class PricesApp {
         };
     }
 
-//    @Autowired
-//    PriceService priceService;
-
     public static void main(String[] args) {
-        // Launch the application
         ConfigurableApplicationContext context = SpringApplication.run(PricesApp.class, args);
 
-        JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
-//        jmsTemplate.setPubSubDomain(true);
-
-        // Send a message with a POJO - the template reuse the message converter
-        log.info("Sending a test message.");
-        jmsTemplate.convertAndSend("mailbox", "info@example.com Hello");
-
+        //TODO remove it?
         PriceService priceService = context.getBean(PriceService.class);
         priceService.savePrices(
                 new ArrayList<>(Arrays.asList(

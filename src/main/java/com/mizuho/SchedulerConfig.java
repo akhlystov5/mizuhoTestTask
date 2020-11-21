@@ -16,7 +16,7 @@ public class SchedulerConfig {
     @Autowired
     PriceService priceService;
 
-    @Scheduled(fixedDelay = 30*1000)
+    @Scheduled(initialDelay = 30*1000, fixedDelay = 30*1000)
     public void scheduleFixedDelayTask() {
         LocalDateTime localDateTime = LocalDateTime.now().minusDays(30);
         log.info( "Fixed delay task. should delete prices older than - " + localDateTime);

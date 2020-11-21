@@ -21,26 +21,29 @@ public class PriceRestController {
     @Autowired
     PriceService priceService;
 
-    @GetMapping(path = "/vendor/{vendor}")
-    public ResponseEntity<List<Price>> byVendor(@PathVariable String vendor) {
+    //TODO move this to be
+    //GET /tickets?sort=-priority - Retrieves a list of tickets in descending order of priority
+    @GetMapping(path = "/prices/vendor/{vendor}")
+    public ResponseEntity<List<Price>> pricesByVendor(@PathVariable String vendor) {
         log.info("get prices by vendor {}", vendor);
         List<Price> prices = priceService.getPrices(vendor);
         return new ResponseEntity<>(prices, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/isin/{isin}")
-    public ResponseEntity<List<Price>> byIsin(@PathVariable String isin) {
+    @GetMapping(path = "/prices/isin/{isin}")
+    public ResponseEntity<List<Price>> pricesByIsin(@PathVariable String isin) {
         log.info("get prices by isin {}", isin);
         List<Price> prices = priceService.getPricesByIsin(isin);
         return new ResponseEntity<>(prices, HttpStatus.OK);
     }
 
-    @PostMapping(path = "/deleteOld")
-    public ResponseEntity<String> deleteOld() {
-        LocalDateTime timestamp = LocalDateTime.now().minusSeconds(30);
-        log.info("deleting data older than" + timestamp);
-        long deleted = priceService.deletePricesOlderThan(timestamp);
-        return new ResponseEntity<>(deleted + " price(s) deleted", HttpStatus.OK);
-    }
+    //TODO delete used for testing only
+//    @PostMapping(path = "/delete/old")
+//    public ResponseEntity<String> deleteOld() {
+//        LocalDateTime timestamp = LocalDateTime.now().minusSeconds(30);
+//        log.info("deleting data older than" + timestamp);
+//        long deleted = priceService.deletePricesOlderThan(timestamp);
+//        return new ResponseEntity<>(deleted + " price(s) deleted", HttpStatus.OK);
+//    }
 
 }

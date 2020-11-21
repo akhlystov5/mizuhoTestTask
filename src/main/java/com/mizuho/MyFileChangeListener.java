@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileChangeListener;
@@ -25,6 +26,9 @@ public class MyFileChangeListener implements FileChangeListener {
 
     @Autowired
     private JmsTemplate jmsTemplate;
+
+    @Value("${vendor.publish.directory}")
+    private String vendorPublishDirectory;
 
     @Override
     public void onChange(Set<ChangedFiles> changeSet) {
