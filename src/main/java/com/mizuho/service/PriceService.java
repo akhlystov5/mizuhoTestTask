@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,32 +23,25 @@ public class PriceService {
     PriceRepository priceRepository;
 
     @Transactional
-    public void savePrices(String fileName, List<String> priceLines) {
-        String vendorName = extractVendorName(fileName);
+    public void savePrices(List<Price> vendorPrices) {
+        Long deletedItems = priceRepository.deleteAllByVendor(vendorPrices.get(0).getVendor());
+        log.info("deleted Prices="+deletedItems + " for Vendor=" + vendorPrices.get(0).getVendor());
 
-        List<Price> vendorPrices = getPrices(vendorName, priceLines);
-
-        priceRepository.deleteAllByVendor(vendorName);
         priceRepository.saveAll(vendorPrices);
-    }
-
-    private List<Price> getPrices(String vendorName, List<String> priceLines) {
-        priceLines.remove(0);//remove header
-        List<Price> prices = priceLines.stream().map(s -> {
-            String[] values = s.split(",");
-            log.info(Arrays.asList(values).toString());
-            return Price.builder().vendor(vendorName).isin(values[1]).instrument(values[0]).price(new BigDecimal(values[2])).build();
-        }).collect(Collectors.toList());
-        log.info("prices=" + prices);
-        return prices;
-    }
-
-    private String extractVendorName(String fileName) {
-
-        return Paths.get(fileName).getFileName().toString().split(" ")[0];
     }
 
     public List<Price> getPrices(String vendor) {
         return priceRepository.findByVendor(vendor);
+    }
+
+    public List<Price> getPricesByIsin(String isin) {
+        return priceRepository.findByIsin(isin);
+    }
+
+    @Transactional
+    public long deletePricesOlderThan(LocalDateTime timestamp) {
+        List<Price> deletedPrices = priceRepository.deleteAllByCreatedLessThanEqual(timestamp);
+        log.info("Deleted {} prices {}", deletedPrices.size(), deletedPrices);
+        return deletedPrices.size();
     }
 }

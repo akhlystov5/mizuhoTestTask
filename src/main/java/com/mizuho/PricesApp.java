@@ -5,10 +5,9 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import com.google.common.collect.Lists;
+import com.mizuho.model.Price;
 import com.mizuho.service.PriceService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -19,15 +18,17 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @SpringBootApplication
 @EnableJms
 @Slf4j
+@EnableScheduling
 public class PricesApp {
 
     @Bean
@@ -84,8 +85,14 @@ public class PricesApp {
         jmsTemplate.convertAndSend("mailbox", "info@example.com Hello");
 
         PriceService priceService = context.getBean(PriceService.class);
-        priceService.savePrices("TestVendor 1.csv",
-                new ArrayList(Arrays.asList("header1,header2,header3", "name1,isin1,120.00")));
+        priceService.savePrices(
+                new ArrayList<>(Arrays.asList(
+                        Price.builder().vendor("TestVendor").instrument("name1")
+                                .isin("isin1").price(BigDecimal.valueOf(110.00D)).build(),
+                        Price.builder().vendor("TestVendor").instrument("name2")
+                                .isin("isin2").price(BigDecimal.valueOf(220.00D))
+                                .created(LocalDateTime.now().minusDays(60)).build()
+                )));
     }
 
 }

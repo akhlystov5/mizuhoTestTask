@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,4 +27,20 @@ public class PriceRestController {
         List<Price> prices = priceService.getPrices(vendor);
         return new ResponseEntity<>(prices, HttpStatus.OK);
     }
+
+    @GetMapping(path = "/isin/{isin}")
+    public ResponseEntity<List<Price>> byIsin(@PathVariable String isin) {
+        log.info("get prices by isin {}", isin);
+        List<Price> prices = priceService.getPricesByIsin(isin);
+        return new ResponseEntity<>(prices, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/deleteOld")
+    public ResponseEntity<String> deleteOld() {
+        LocalDateTime timestamp = LocalDateTime.now().minusSeconds(30);
+        log.info("deleting data older than" + timestamp);
+        long deleted = priceService.deletePricesOlderThan(timestamp);
+        return new ResponseEntity<>(deleted + " price(s) deleted", HttpStatus.OK);
+    }
+
 }
