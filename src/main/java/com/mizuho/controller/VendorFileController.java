@@ -1,4 +1,4 @@
-package com.mizuho.listener;
+package com.mizuho.controller;
 
 import com.mizuho.model.Price;
 import com.mizuho.service.PriceService;

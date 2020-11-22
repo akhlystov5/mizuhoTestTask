@@ -1,4 +1,4 @@
-package com.mizuho.listener;
+package com.mizuho.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 /**
  * This class demonstrates the way clients can subscribe to a topic to receive prices updates from vendors
  * Clients will receive a notification with a file path to the .csv data file they can read
+ *
+ * Not Unit Tested as This class is created for demo purposes and not part of the app.
  *
  * @author Alexander Khlystov
  */
