@@ -19,8 +19,6 @@ public class PriceRestController {
     @Autowired
     PriceService priceService;
 
-    //TODO move this to be
-    //GET /tickets?sort=-priority - Retrieves a list of tickets in descending order of priority
     @GetMapping(path = "/prices/vendor/{vendor}")
     public ResponseEntity<List<Price>> pricesByVendor(@PathVariable String vendor) {
         log.info("get prices by vendor {}", vendor);
@@ -35,7 +33,7 @@ public class PriceRestController {
         return new ResponseEntity<>(prices, HttpStatus.OK);
     }
 
-    //TODO delete used for testing only
+    //used for testing only
 //    @PostMapping(path = "/delete/old")
 //    public ResponseEntity<String> deleteOld() {
 //        LocalDateTime timestamp = LocalDateTime.now().minusSeconds(30);

@@ -54,5 +54,4 @@ public class VendorFileController {
         log.info("Published to a topic <" + message + ">");
     }
 
-    //TODO think about exception handling
 }
