@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class VendorFilePublishedQueueListener {
+public class VendorFileController {
 
     @Autowired
     JmsTemplate jmsTemplate;
@@ -50,8 +50,7 @@ public class VendorFilePublishedQueueListener {
         priceService.savePrices(prices);
 
         //send to distribution topic
-        jmsTemplate.convertAndSend("vendor-data" +
-                "-topic", message);
+        jmsTemplate.convertAndSend("vendor-data-topic", message);
         log.info("Published to a topic <" + message + ">");
     }
 

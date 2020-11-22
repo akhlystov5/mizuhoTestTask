@@ -17,7 +17,7 @@ import java.time.Duration;
 public class FileWatcherConfig {
 
     @Autowired
-    VendorFileChangeListener vendorFileChangeListener;
+    VendorFileListener vendorFileListener;
 
     @Value("${vendor.publish.directory}")
     private String vendorPublishDirectory;
@@ -25,7 +25,19 @@ public class FileWatcherConfig {
     @PostConstruct
     public void createFolders() {
         log.info("vendorPublishDirectory="+vendorPublishDirectory);
-        //TODO create 3 folders if don't exist
+        this.createFolderIfDoesntExist(vendorPublishDirectory);
+        this.createFolderIfDoesntExist(vendorPublishDirectory + "/input");
+        this.createFolderIfDoesntExist(vendorPublishDirectory + "/error");
+        this.createFolderIfDoesntExist(vendorPublishDirectory + "/processed");
+    }
+
+    private void createFolderIfDoesntExist(String folder) {
+        File dir = new File(folder);
+        log.info(dir.getAbsolutePath() + " exists? " + dir.exists());
+        if (!dir.exists()) {
+            dir.mkdir();
+            log.info("mkdir " + dir.getAbsolutePath());
+        }
     }
 
     @Bean
@@ -37,7 +49,7 @@ public class FileWatcherConfig {
         File directory = new File(vendorPublishDirectory + "/input");
         log.info("directory.getAbsolutePath()="+directory.getAbsolutePath());
         fileSystemWatcher.addSourceDirectory(directory);
-        fileSystemWatcher.addListener(vendorFileChangeListener);
+        fileSystemWatcher.addListener(vendorFileListener);
         fileSystemWatcher.start();
         log.info("started fileSystemWatcher");
         return fileSystemWatcher;

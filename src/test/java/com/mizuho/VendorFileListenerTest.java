@@ -18,10 +18,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class VendorFileChangeListenerTest {
+public class VendorFileListenerTest {
 
     @InjectMocks
-    VendorFileChangeListener vendorFileChangeListener;
+    VendorFileListener vendorFileListener;
 
     @Mock
     private JmsTemplate jmsTemplate;
@@ -38,11 +38,16 @@ public class VendorFileChangeListenerTest {
         new File("src/test/resources/csv/input", "Test 1.csv").deleteOnExit();
         new File("src/test/resources/csv/error", "Test 1.csv").deleteOnExit();
         new File("src/test/resources/csv/processed", "Test 1.csv").deleteOnExit();
+
+        new File("src/test/resources/csv/input", "Test 2.csv").deleteOnExit();
+        new File("src/test/resources/csv/error", "Test 2.csv").deleteOnExit();
+        new File("src/test/resources/csv/processed", "Test 2.csv").deleteOnExit();
+
     }
 
     @Test
     public void onChange() {
-//        Mockito.when(vendorFileChangeListener.isLocked(Mockito.anyObject())).thenReturn(false);
+//        Mockito.when(vendorFileListener.isLocked(Mockito.anyObject())).thenReturn(false);
 
         Set<ChangedFiles> changeSet = new HashSet<>();
         Set<ChangedFile> files = new HashSet<>();
@@ -51,7 +56,7 @@ public class VendorFileChangeListenerTest {
         files.add(new ChangedFile(sourceDirectory, new File(pathname, "Test 1.csv"), ChangedFile.Type.ADD) );
         changeSet.add(new ChangedFiles(sourceDirectory, files));
 
-        vendorFileChangeListener.onChange(changeSet);
+        vendorFileListener.onChange(changeSet);
 
         Mockito.verify(jmsTemplate).convertAndSend("vendor-file-published-queue",
                 new File("src/test/resources/csv/processed", "Test 1.csv").getAbsolutePath());
@@ -59,7 +64,7 @@ public class VendorFileChangeListenerTest {
 
     @Test
     public void onChangeFail() {
-//        Mockito.when(vendorFileChangeListener.isLocked(Mockito.anyObject())).thenReturn(false);
+//        Mockito.when(vendorFileListener.isLocked(Mockito.anyObject())).thenReturn(false);
 
         Set<ChangedFiles> changeSet = new HashSet<>();
         Set<ChangedFile> files = new HashSet<>();
@@ -68,7 +73,7 @@ public class VendorFileChangeListenerTest {
         files.add(new ChangedFile(sourceDirectory, new File(pathname, "Test 2.csv"), ChangedFile.Type.ADD) );
         changeSet.add(new ChangedFiles(sourceDirectory, files));
 
-        vendorFileChangeListener.onChange(changeSet);
+        vendorFileListener.onChange(changeSet);
 
         Mockito.verify(jmsTemplate, Mockito.times(0)).convertAndSend(Mockito.anyString(), Mockito.anyString());
     }

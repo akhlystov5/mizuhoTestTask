@@ -14,17 +14,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class ReadVendorDataTopicListener {
+public class ClientSubscriptionController {
 
     @JmsListener(destination = "vendor-data-topic", containerFactory = "jmsTopicListenerContainerFactory")
     public void receiveMessageLGIM(String message) {
-        //for logging purposes
         log.info("LGIM has received vendor data <" + message + ">");
+        //LGIM should read file from the filepath passed as a parameter
     }
 
     @JmsListener(destination = "vendor-data-topic", containerFactory = "jmsTopicListenerContainerFactory")
     public void receiveMessageMizuho(String message) {
-        //for logging purposes
         log.info("Mizuho has received vendor data <" + message + ">");
+        //Mizuho should read file from the filepath passed as a parameter
     }
 }

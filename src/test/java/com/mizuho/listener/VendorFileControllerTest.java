@@ -1,6 +1,5 @@
 package com.mizuho.listener;
 
-import com.mizuho.controller.PriceRestController;
 import com.mizuho.model.Price;
 import com.mizuho.service.PriceService;
 import com.mizuho.transformer.PriceTransformer;
@@ -11,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import java.io.IOException;
@@ -20,13 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class VendorFilePublishedQueueListenerTest {
+public class VendorFileControllerTest {
 
     @InjectMocks
-    VendorFilePublishedQueueListener vendorFilePublishedQueueListener;
+    VendorFileController vendorFileController;
 
     @Mock
     PriceService priceService;
@@ -54,7 +50,7 @@ public class VendorFilePublishedQueueListenerTest {
         ));
         Mockito.when(priceTransformer.extractPrices(message, lines)).thenReturn(prices);
 
-        vendorFilePublishedQueueListener.receiveMessage(message);
+        vendorFileController.receiveMessage(message);
 
         Mockito.verify(priceService,Mockito.times(1)).savePrices(prices);
         Mockito.verify(jmsTemplate).convertAndSend("vendor-data-topic", message);

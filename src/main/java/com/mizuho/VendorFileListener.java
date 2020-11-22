@@ -22,7 +22,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-public class VendorFileChangeListener implements FileChangeListener {
+public class VendorFileListener implements FileChangeListener {
 
     @Autowired
     private JmsTemplate jmsTemplate;
